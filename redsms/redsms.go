@@ -51,7 +51,7 @@ func NewClient(httpClient *http.Client) *Client {
 // NewRequest creates an API request.
 // If specified, the body is JSON encoded.
 func (c *Client) NewRequest(method, endpoint string, body interface{}) (*http.Request, error) {
-	u, err := c.BaseURL.Parse(urlStr)
+	u, err := c.BaseURL.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
