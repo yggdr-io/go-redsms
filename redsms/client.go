@@ -6,10 +6,15 @@ type ClientService service
 
 func (s *ClientService) GetInfo(ctx context.Context) (*Response, error) {
 	u := "client/info"
-	_, err := s.client.NewRequest("GET", u, nil)
+	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	resp, err := s.client.Do(ctx, req, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
