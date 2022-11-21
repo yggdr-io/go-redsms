@@ -16,8 +16,18 @@ type Client struct {
 	// httpClient communicates with the API.
 	httpClient *http.Client
 
+	// Reuse a single struct instead of allocating one for each service on the heap.
+	common service
+
 	// Base URL for API requests.
 	BaseURL *url.URL
+
+	// Services used for talking to different parts of the RedSMS API.
+	Client *ClientService
+}
+
+type service struct {
+	client *Client
 }
 
 // NewClient returns a new RedSMS API client.
@@ -28,10 +38,14 @@ func NewClient(httpClient *http.Client) *Client {
 	}
 	baseURL, _ := url.Parse(defaultBaseURL)
 
-	return &Client{
+	c := &Client{
 		httpClient: httpClient,
 		BaseURL:    baseURL,
 	}
+	c.common.client = c
+	c.Client = (*ClientService)(&c.common)
+
+	return c
 }
 
 // NewRequest creates an API request.
