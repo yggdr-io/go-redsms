@@ -77,3 +77,10 @@ func (c *Client) NewRequest(method, endpoint string, body interface{}) (*http.Re
 
 	return req, nil
 }
+
+// Response is a RedSMS API response.
+type Response struct {
+	*http.Response
+
+	// FIXME: It should provide convenient access to pagination links.
+}
