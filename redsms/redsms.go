@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -102,6 +103,11 @@ func (c *Client) BareDo(ctx context.Context, req *http.Request) (*Response, erro
 		return nil, err
 	}
 
+	err = CheckResponse(resp)
+	if err != nil {
+		defer resp.Body.Close()
+	}
+
 	return &Response{Response: resp}, err
 }
 
@@ -127,9 +133,38 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 	return resp, nil
 }
 
+// CheckResponse checks the API response for errors,
+// and returns them if present.
+func CheckResponse(r *http.Response) error {
+	if c := r.StatusCode; 200 <= c && c <= 299 {
+		return nil
+	}
+
+	errorResponse := &ErrorResponse{Response: r}
+	body, err := io.ReadAll(r.Body)
+	if err == nil && body != nil {
+		json.Unmarshal(body, errorResponse)
+	}
+
+	return errorResponse
+}
+
 // Response is a RedSMS API response.
 type Response struct {
 	*http.Response
 
 	// FIXME: It should provide convenient access to pagination links.
+}
+
+// ErrorResponse reports one or more errors caused by an API request.
+type ErrorResponse struct {
+	Response *http.Response `json:"-"`
+
+	ErrorMessage string `json:"error_message"`
+}
+
+func (r *ErrorResponse) Error() string {
+	return fmt.Sprintf("%v %v: %d %v",
+		r.Response.Request.Method, r.Response.Request.URL,
+		r.Response.StatusCode, r.ErrorMessage)
 }
