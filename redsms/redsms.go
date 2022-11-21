@@ -2,6 +2,7 @@ package redsms
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -76,6 +77,54 @@ func (c *Client) NewRequest(method, endpoint string, body interface{}) (*http.Re
 	}
 
 	return req, nil
+}
+
+// BareDo sends an API request and lets you handle the api response.
+//
+// The provided ctx must be non-nil, if it is nil an error is returned. If it is
+// canceled or times out, ctx.Err() will be returned.
+func (c *Client) BareDo(ctx context.Context, req *http.Request) (*Response, error) {
+	if ctx == nil {
+		return nil, errNonNilContext
+	}
+
+	req = req.WithContext(ctx)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		select {
+		case <-ctx.Done():
+			// the context's error is probably more useful
+			return nil, ctx.Err()
+		default:
+		}
+
+		return nil, err
+	}
+
+	return &Response{Response: resp}, err
+}
+
+// Do sends an API request and returns the API response.
+// The API response is JSON decoded and stored in the value pointed to by v,
+// or returned as an error if an API error has occurred.
+func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
+	resp, err := c.BareDo(ctx, req)
+	if err != nil {
+		return resp, err
+	}
+	defer resp.Body.Close()
+
+	decErr := json.NewDecoder(resp.Body).Decode(v)
+	if decErr == io.EOF {
+		// ignore EOF errors caused by empty response body
+		decErr = nil
+	}
+	if decErr != nil {
+		return resp, err
+	}
+
+	return resp, nil
 }
 
 // Response is a RedSMS API response.
