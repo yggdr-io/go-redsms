@@ -1,4 +1,6 @@
 /.vscode/
 
+/vendor/
+
 # Other
 .DS_Store
