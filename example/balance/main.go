@@ -19,12 +19,13 @@ func main() {
 	if apiKey == "" {
 		log.Fatal("Unauthorized: REDSMS_APIKEY env is not set")
 	}
+	ctx := context.Background()
 	tp := redsms.SimpleAuthTransport{
 		Login:  login,
 		APIKey: apiKey,
 	}
-	c := redsms.NewClient(tp.Client())
-	info, _, err := c.Client.GetInfo(context.Background())
+	client := redsms.NewClient(tp.Client())
+	info, _, err := client.Client.GetInfo(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
