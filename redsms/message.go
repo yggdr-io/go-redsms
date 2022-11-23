@@ -13,6 +13,9 @@ func (s *MessageService) Send(ctx context.Context, msg *Message) (*SendMessageRe
 
 	var respAPI SendMessageResponse
 	resp, err := s.client.Do(ctx, req, &respAPI)
+	if err != nil {
+		return nil, resp, err
+	}
 
 	return &respAPI, resp, nil
 }
