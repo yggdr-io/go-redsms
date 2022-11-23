@@ -46,6 +46,7 @@ func NewClient(httpClient *http.Client) *Client {
 	}
 	c.common.client = c
 	c.Client = (*ClientService)(&c.common)
+	c.Message = (*MessageService)(&c.common)
 
 	return c
 }
