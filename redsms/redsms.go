@@ -25,7 +25,8 @@ type Client struct {
 	BaseURL *url.URL
 
 	// Services used for talking to different parts of the RedSMS API.
-	Client *ClientService
+	Client  *ClientService
+	Message *MessageService
 }
 
 type service struct {
