@@ -4,20 +4,20 @@ import "context"
 
 type MessageService service
 
-func (s *MessageService) Send(ctx context.Context, msg *Message) (*SendMessageResponse, *Response, error) {
+func (s *MessageService) Send(ctx context.Context, msg *Message) (*SendMessageReport, *Response, error) {
 	u := "message"
 	req, err := s.client.NewRequest("POST", u, msg)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var respAPI SendMessageResponse
-	resp, err := s.client.Do(ctx, req, &respAPI)
+	var report SendMessageReport
+	resp, err := s.client.Do(ctx, req, &report)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return &respAPI, resp, nil
+	return &report, resp, nil
 }
 
 type MessageRoute string
@@ -33,18 +33,18 @@ type Message struct {
 	Route MessageRoute `json:"route"`
 }
 
-type SendMessageResponse struct {
-	Items   []*SendMessageItem  `json:"items"`
-	Errors  []*SendMessageError `json:"errors"`
-	Success bool                `json:"success"`
+type SendMessageReport struct {
+	Items   []*SendMessagReportItem   `json:"items"`
+	Errors  []*SendMessageReportError `json:"errors"`
+	Success bool                      `json:"success"`
 }
 
-type SendMessageItem struct {
+type SendMessagReportItem struct {
 	UUID string `json:"uuid"`
 	To   string `json:"to"`
 }
 
-type SendMessageError struct {
+type SendMessageReportError struct {
 	To      string `json:"to"`
 	Message string `json:"message"`
 }
