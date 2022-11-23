@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"os"
 
@@ -10,7 +11,13 @@ import (
 
 const Sender string = "REDSMS"
 
+var (
+	to   = flag.String("to", "", "recipient's mobile phone")
+	text = flag.String("text", "", "message text")
+)
+
 func main() {
+	flag.Parse()
 	login := os.Getenv("REDSMS_LOGIN")
 	if login == "" {
 		log.Fatal("Unauthorized: REDSMS_LOGIN env is not set")
@@ -19,18 +26,26 @@ func main() {
 	if apiKey == "" {
 		log.Fatal("Unauthorized: REDSMS_APIKEY env is not set")
 	}
+	if *to == "" {
+		log.Fatal("No recipient: you must specify recipient's mobile phone")
+	}
+	if *text == "" {
+		log.Fatal("No text: you must specify message text")
+	}
+	ctx := context.Background()
 	tp := redsms.SimpleAuthTransport{
 		Login:  login,
 		APIKey: apiKey,
 	}
-	c := redsms.NewClient(tp.Client())
+	client := redsms.NewClient(tp.Client())
+
 	msg := redsms.Message{
 		From:  Sender,
-		To:    "+1234567890",
-		Text:  "Hello world!",
+		To:    *to,
+		Text:  *text,
 		Route: redsms.MessageRouteSMS,
 	}
-	report, _, err := c.Message.Send(context.Background(), &msg)
+	report, _, err := client.Message.Send(ctx, &msg)
 	if err != nil {
 		log.Fatal(err)
 	}
