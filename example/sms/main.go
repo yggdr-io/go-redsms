@@ -1,3 +1,5 @@
+// The balance command utilize go-redsms as a cli tool for
+// sending sms message.
 package main
 
 import (
