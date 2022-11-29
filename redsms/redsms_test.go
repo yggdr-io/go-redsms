@@ -31,7 +31,10 @@ func TestNewRequest(t *testing.T) {
 	}
 	outBody := `{"foo":"bar"}` + "\n"
 
-	req, _ := c.NewRequest("GET", inURL, inBody)
+	req, err := c.NewRequest("GET", inURL, inBody)
+	if err != nil {
+		t.Fatalf("NewRequest returned unexpected error: %v", err)
+	}
 
 	if got, want := req.URL.String(), outURL; got != want {
 		t.Errorf("NewRequest(%q) URL is %s, want %s", inURL, got, want)
