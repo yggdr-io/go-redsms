@@ -63,7 +63,8 @@ func TestNewRequest_badMethod(t *testing.T) {
 func TestNewRequest_badURL(t *testing.T) {
 	c := NewClient(nil)
 
-	_, err := c.NewRequest("GET", ":", nil)
+	ctl := "\x7f" // ASCII control character
+	_, err := c.NewRequest("GET", ctl, nil)
 
 	if err, ok := err.(*url.Error); !ok || err.Op != "parse" {
 		t.Errorf("Expected URL parse error, got %v", err)
