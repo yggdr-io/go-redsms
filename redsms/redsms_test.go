@@ -11,12 +11,12 @@ func TestNewClient(t *testing.T) {
 	c := NewClient(nil)
 
 	if got, want := c.BaseURL.String(), defaultBaseURL; got != want {
-		t.Errorf("NewClient BaseURL is %s, want %s", got, want)
+		t.Errorf("NewClient() BaseURL is %s, want %s", got, want)
 	}
 
 	c2 := NewClient(nil)
 	if c.httpClient == c2.httpClient {
-		t.Error("NewClient returned the same http.Client, but they should differ")
+		t.Error("NewClient() returned the same http.Client, but they should differ")
 	}
 }
 
@@ -46,6 +46,16 @@ func TestNewRequest(t *testing.T) {
 	}
 }
 
+func TestNewRequest_badMethod(t *testing.T) {
+	c := NewClient(nil)
+
+	_, err := c.NewRequest("FOO\nBAR", ".", nil)
+
+	if err == nil {
+		t.Errorf("Expected error to be returned")
+	}
+}
+
 func TestNewRequest_badURL(t *testing.T) {
 	c := NewClient(nil)
 
@@ -53,16 +63,6 @@ func TestNewRequest_badURL(t *testing.T) {
 
 	if err, ok := err.(*url.Error); !ok || err.Op != "parse" {
 		t.Errorf("Expected URL parse error, got %+v", err)
-	}
-}
-
-func TestNewRequest_badMethod(t *testing.T) {
-	c := NewClient(nil)
-
-	_, err := c.NewRequest("FOO\nBAR", "foo", nil)
-
-	if err == nil {
-		t.Errorf("Expected error to be returned")
 	}
 }
 
@@ -75,6 +75,6 @@ func TestNewRequest_badBody(t *testing.T) {
 	_, err := c.NewRequest("GET", ".", &T{})
 
 	if err, ok := err.(*json.UnsupportedTypeError); !ok {
-		t.Errorf("Expected a json unsupported type error, got %+v", err)
+		t.Errorf("Expected a JSON unsupported type error, got %+v", err)
 	}
 }
