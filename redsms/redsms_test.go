@@ -1,6 +1,7 @@
 package redsms
 
 import (
+	"encoding/json"
 	"io"
 	"net/url"
 	"testing"
@@ -62,5 +63,18 @@ func TestNewRequest_badMethod(t *testing.T) {
 
 	if err == nil {
 		t.Errorf("Expected error to be returned")
+	}
+}
+
+func TestNewRequest_badBody(t *testing.T) {
+	c := NewClient(nil)
+
+	type T struct {
+		A map[interface{}]interface{}
+	}
+	_, err := c.NewRequest("GET", ".", &T{})
+
+	if err, ok := err.(*json.UnsupportedTypeError); !ok {
+		t.Errorf("Expected a json unsupported type error, got %+v", err)
 	}
 }
