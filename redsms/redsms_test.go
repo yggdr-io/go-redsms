@@ -3,6 +3,7 @@ package redsms
 import (
 	"encoding/json"
 	"io"
+	"net/http"
 	"net/url"
 	"testing"
 )
@@ -92,5 +93,14 @@ func TestNewRequest_nilBody(t *testing.T) {
 
 	if req.Body != nil {
 		t.Errorf("Constructed request contains a non-nil Body")
+	}
+}
+
+func TestErrorResponse_Error(t *testing.T) {
+	res := &http.Response{Request: &http.Request{}}
+	err := ErrorResponse{ErrorMessage: "m", Response: res}
+
+	if err.Error() == "" {
+		t.Errorf("Expected non-empty ErrorResponse.Error()")
 	}
 }
