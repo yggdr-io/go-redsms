@@ -70,6 +70,33 @@ func TestNewRequest_badURL(t *testing.T) {
 	}
 }
 
+func TestNewRequest_urlLeadingSlash(t *testing.T) {
+	testcases := map[string]struct {
+		inURL string
+		want  string
+	}{
+		"with leading slash": {
+			inURL: "/foo",
+			want:  defaultBaseURL + "foo",
+		},
+		"without leading slash": {
+			inURL: "foo",
+			want:  defaultBaseURL + "foo",
+		},
+	}
+
+	for name, tc := range testcases {
+		t.Run(name, func(t *testing.T) {
+			c := NewClient(nil)
+			req, _ := c.NewRequest("GET", tc.inURL, nil)
+			if got := req.URL.String(); got != tc.want {
+				t.Errorf("NewRequest(%q) URL is %s, want %s",
+					tc.inURL, got, tc.want)
+			}
+		})
+	}
+}
+
 func TestNewRequest_badBody(t *testing.T) {
 	c := NewClient(nil)
 
