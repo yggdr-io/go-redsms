@@ -81,3 +81,16 @@ func TestNewRequest_badBody(t *testing.T) {
 		t.Errorf("Expected a JSON unsupported type error, got %v", err)
 	}
 }
+
+func TestNewRequest_nilBody(t *testing.T) {
+	c := NewClient(nil)
+
+	req, err := c.NewRequest("GET", ".", nil)
+	if err != nil {
+		t.Fatalf("NewRequest returned unexpected error: %v", err)
+	}
+
+	if req.Body != nil {
+		t.Errorf("Constructed request contains a non-nil Body")
+	}
+}
