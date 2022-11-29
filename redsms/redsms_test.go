@@ -54,3 +54,13 @@ func TestNewRequest_badURL(t *testing.T) {
 		t.Errorf("Expected URL parse error, got %+v", err)
 	}
 }
+
+func TestNewRequest_badMethod(t *testing.T) {
+	c := NewClient(nil)
+
+	_, err := c.NewRequest("FOO\nBAR", "foo", nil)
+
+	if err == nil {
+		t.Errorf("Expected error to be returned")
+	}
+}
