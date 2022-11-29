@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
 )
 
 const (
@@ -55,7 +56,7 @@ func NewClient(httpClient *http.Client) *Client {
 // NewRequest creates an API request.
 // If specified, the body is JSON encoded.
 func (c *Client) NewRequest(method, endpoint string, body interface{}) (*http.Request, error) {
-	u, err := c.BaseURL.Parse(endpoint)
+	u, err := c.BaseURL.Parse(path.Join(c.BaseURL.Path, endpoint))
 	if err != nil {
 		return nil, err
 	}
