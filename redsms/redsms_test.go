@@ -11,7 +11,7 @@ func TestNewClient(t *testing.T) {
 	c := NewClient(nil)
 
 	if got, want := c.BaseURL.String(), defaultBaseURL; got != want {
-		t.Errorf("NewClient BaseUtl is %s, want %s", got, want)
+		t.Errorf("NewClient BaseURL is %s, want %s", got, want)
 	}
 
 	c2 := NewClient(nil)
