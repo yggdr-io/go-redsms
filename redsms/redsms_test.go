@@ -83,7 +83,7 @@ func TestNewRequest_badBody(t *testing.T) {
 	}
 }
 
-func TestNewRequest_nilBody(t *testing.T) {
+func TestNewRequest_noBody(t *testing.T) {
 	c := NewClient(nil)
 
 	req, err := c.NewRequest("GET", ".", nil)
