@@ -1,3 +1,5 @@
+// The balance command utilize go-redsms as a cli tool for
+// getting balance information.
 package main
 
 import (
