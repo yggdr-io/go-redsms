@@ -29,7 +29,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("Client: %s", info.Login)
+	st := "active"
+	if !info.Active {
+		st = "inactive"
+	}
+	log.Printf("Client: %s, status: %s", info.Login, st)
 	log.Printf("Balance: %.2f RUB, overdraft: %.2f RUB",
 		info.Balance, conv(info.Overdraft))
 }
