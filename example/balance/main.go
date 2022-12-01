@@ -11,9 +11,17 @@ import (
 )
 
 func main() {
+	login := os.Getenv("REDSMS_LOGIN")
+	if login == "" {
+		log.Fatal("Unauthorized: REDSMS_LOGIN env is not set")
+	}
+	apiKey := os.Getenv("REDSMS_APIKEY")
+	if apiKey == "" {
+		log.Fatal("Unauthorized: REDSMS_APIKEY env is not set")
+	}
 	tp := redsms.SimpleAuthTransport{
-		Login:  os.Getenv("LOGIN"),
-		APIKey: os.Getenv("APIKEY"),
+		Login:  login,
+		APIKey: apiKey,
 	}
 	c := redsms.NewClient(tp.Client())
 	info, _, err := c.Client.GetInfo(context.Background())
