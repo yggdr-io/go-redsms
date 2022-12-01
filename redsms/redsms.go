@@ -25,7 +25,8 @@ type Client struct {
 	BaseURL *url.URL
 
 	// Services used for talking to different parts of the RedSMS API.
-	Client *ClientService
+	Client  *ClientService
+	Message *MessageService
 }
 
 type service struct {
@@ -46,6 +47,7 @@ func NewClient(httpClient *http.Client) *Client {
 	}
 	c.common.client = c
 	c.Client = (*ClientService)(&c.common)
+	c.Message = (*MessageService)(&c.common)
 
 	return c
 }
