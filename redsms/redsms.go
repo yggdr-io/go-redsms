@@ -145,7 +145,9 @@ func CheckResponse(r *http.Response) error {
 	errorResponse := &ErrorResponse{Response: r}
 	body, err := io.ReadAll(r.Body)
 	if err == nil && body != nil {
-		json.Unmarshal(body, errorResponse)
+		if err := json.Unmarshal(body, errorResponse); err != nil {
+			errorResponse.ErrorMessage = "unknown error (json unmarshaling)"
+		}
 	}
 
 	return errorResponse
