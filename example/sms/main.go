@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/gurza/go-redsms/redsms"
+	"github.com/yggdr-corp/go-redsms/redsms"
 )
 
 const Sender string = "REDSMS"
