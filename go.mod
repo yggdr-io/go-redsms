@@ -1,4 +1,4 @@
-module github.com/yggdr-corp/go-redsms/v1
+module github.com/yggdr-corp/go-redsms/v2
 
 go 1.19
 

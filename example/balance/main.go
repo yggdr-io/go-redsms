@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/yggdr-corp/go-redsms/v1/redsms"
+	"github.com/yggdr-corp/go-redsms/v2/redsms"
 )
 
 func main() {
