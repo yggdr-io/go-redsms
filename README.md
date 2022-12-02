@@ -1,5 +1,8 @@
 # go-redsms
 
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/yggdr-corp/go-redsms?sort=semver)](https://github.com/yggdr-corp/go-redsms/releases)
+[![Go Reference](https://pkg.go.dev/badge/github.com/yggdr-corp/go-redsms/v2/redsms.svg)](https://pkg.go.dev/github.com/yggdr-corp/go-redsms/v2/redsms)
+
 go-redsms is a Go client library for accessing the [RedSMS API](https://redsms.ru/integration/api/).
 
 ## Contributing
