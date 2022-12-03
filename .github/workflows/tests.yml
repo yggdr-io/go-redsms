@@ -1,0 +1,46 @@
+name: tests
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.x, 1.19.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Setup go ${{ matrix.go-version }} 
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Get values for cache paths to be used in later steps 
+      - id: cache-paths
+        run: |
+          echo "go-cache=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+          echo "go-mod-cache=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Cache go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.cache-paths.outputs.go-cache }}
+            ${{ steps.cache-paths.outputs.go-mod-cache }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+
+      - name: Run go test
+        run: go test -v -race -coverprofile coverage.txt -covermode atomic ./...
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
