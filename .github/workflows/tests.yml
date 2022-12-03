@@ -15,13 +15,13 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-    - name: checkout
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: setup go ${{ matrix.go-version }} 
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ matrix.go-version }}
+      - name: Setup go ${{ matrix.go-version }} 
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
 
-    - name: run go test
-      run: go test -v -race -coverprofile coverage.txt -covermode atomic ./...
+      - name: Run go test
+        run: go test -v -race -coverprofile coverage.txt -covermode atomic ./...
