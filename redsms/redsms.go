@@ -55,7 +55,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 // NewRequest creates an API request.
 // If specified, the body is JSON encoded.
-func (c *Client) NewRequest(method, endpoint string, body interface{}) (*http.Request, error) {
+func (c *Client) NewRequest(method, endpoint string, body any) (*http.Request, error) {
 	u, err := c.BaseURL.Parse(path.Join(c.BaseURL.Path, endpoint))
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (c *Client) BareDo(ctx context.Context, req *http.Request) (*Response, erro
 // Do sends an API request and returns the API response.
 // The API response is JSON decoded and stored in the value pointed to by v,
 // or returned as an error if an API error has occurred.
-func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Response, error) {
+func (c *Client) Do(ctx context.Context, req *http.Request, v any) (*Response, error) {
 	resp, err := c.BareDo(ctx, req)
 	if err != nil {
 		return resp, err
@@ -130,7 +130,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 		decErr = nil
 	}
 	if decErr != nil {
-		return resp, err
+		return resp, decErr
 	}
 
 	return resp, nil

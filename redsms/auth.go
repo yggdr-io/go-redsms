@@ -31,12 +31,14 @@ func (t *SimpleAuthTransport) Client() *http.Client {
 
 // RoundTrip implements the RoundTripper interface.
 func (t *SimpleAuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := req.Clone(req.Context())
+
 	ts := uuid.New().String()
 	s := fmt.Sprintf("%x", md5.Sum([]byte(ts+t.APIKey)))
 
-	req.Header.Set("login", t.Login)
-	req.Header.Set("ts", ts)
-	req.Header.Set("secret", s)
+	req2.Header.Set("login", t.Login)
+	req2.Header.Set("ts", ts)
+	req2.Header.Set("secret", s)
 
-	return t.transport().RoundTrip(req)
+	return t.transport().RoundTrip(req2)
 }
