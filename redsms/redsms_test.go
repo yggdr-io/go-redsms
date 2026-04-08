@@ -102,7 +102,7 @@ func TestNewRequest_badBody(t *testing.T) {
 	c := NewClient(nil)
 
 	type T struct {
-		A map[interface{}]interface{}
+		A map[any]any
 	}
 	_, err := c.NewRequest("GET", ".", &T{})
 
