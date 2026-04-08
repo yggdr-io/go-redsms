@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -248,6 +249,13 @@ func TestDo_errorResponse(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error")
 	}
+	errResp, ok := err.(*ErrorResponse)
+	if !ok {
+		t.Fatalf("expected *ErrorResponse, got %T", err)
+	}
+	if errResp.ErrorMessage != "fail" {
+		t.Errorf("expected error_message 'fail', got %q", errResp.ErrorMessage)
+	}
 }
 
 func TestCheckResponse_success(t *testing.T) {
@@ -260,7 +268,7 @@ func TestCheckResponse_success(t *testing.T) {
 func TestCheckResponse_errorWithBadJSON(t *testing.T) {
 	resp := &http.Response{
 		StatusCode: http.StatusBadRequest,
-		Body:       io.NopCloser(newStringReader("not json")),
+		Body:       io.NopCloser(strings.NewReader("not json")),
 		Request:    &http.Request{},
 	}
 	err := CheckResponse(resp)
@@ -390,16 +398,31 @@ func TestMessageService_Send_error(t *testing.T) {
 	}
 }
 
-// newStringReader is a helper to create an io.Reader from a string.
-func newStringReader(s string) io.Reader {
-	return io.NopCloser(io.LimitReader(
-		readerFunc(func(p []byte) (int, error) {
-			n := copy(p, s)
-			return n, io.EOF
-		}), int64(len(s)),
-	))
+func TestDo_invalidJSON(t *testing.T) {
+	srv, c := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `not valid json`)
+	})
+	defer srv.Close()
+
+	req, _ := c.NewRequest("GET", "test", nil)
+	var result struct{ Name string }
+	_, err := c.Do(context.Background(), req, &result)
+	if err == nil {
+		t.Fatal("expected error for invalid JSON response")
+	}
 }
 
-type readerFunc func(p []byte) (int, error)
+func TestDo_emptyBody(t *testing.T) {
+	srv, c := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	defer srv.Close()
 
-func (f readerFunc) Read(p []byte) (int, error) { return f(p) }
+	req, _ := c.NewRequest("GET", "test", nil)
+	var result struct{ Name string }
+	_, err := c.Do(context.Background(), req, &result)
+	if err != nil {
+		t.Fatalf("unexpected error for empty body: %v", err)
+	}
+}

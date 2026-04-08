@@ -130,7 +130,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v any) (*Response, e
 		decErr = nil
 	}
 	if decErr != nil {
-		return resp, err
+		return resp, decErr
 	}
 
 	return resp, nil
